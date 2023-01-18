@@ -15,7 +15,7 @@ pipeline {
         def utest_url = 'target/surefire-reports/**/*.xml'
 
         def nex_cred = 'nexus'
-        def grp_ID = 'example.demo'
+        def grp_ID = 'onlinebookstore'
         def nex_url = '18.180.61.139:8081'
         def nex_ver = 'nexus3'
         def proto = 'http'
@@ -35,17 +35,16 @@ pipeline {
                 sh "${env.mvnpackage}"
                 echo 'Maven Build Completed'
             }
-        }/*
+        }
         stage('Upload Artifact to nexus repository') {
             steps {
                 script {
                     def mavenpom = readMavenPom file: 'pom.xml'
-                    def nex_repo = mavenpom.version.endsWith('SNAPSHOT') ? 'tomcat-SNAPSHOT' : 'tomact-Release'
                     nexusArtifactUploader artifacts: [
                     [
-                        artifactId: 'helloworld',
+                        artifactId: 'onlinebookstore',
                         classifier: '',
-                        file: 'target/helloworld.war',
+                        file: 'target/onlinebookstore.war',
                         type: 'war'
                     ]
                 ],
@@ -54,9 +53,29 @@ pipeline {
                     nexusUrl: "${env.nex_url}",
                     nexusVersion: "${env.nex_ver}",
                     protocol: "${env.proto}",
-                    repository: 'tomcat-Release',
+                    repository: 'Onlinestore-Release',
                     version: "${mavenpom.version}-${env.build_no}"
                     echo 'Artifact uploaded to nexus repository'
+                }
+            }
+        }/*
+		stage('Build Docker image and push on Docker hub'){
+            steps{
+                withCredentials([usernamePassword(credentialsId: 'Docker_hub', passwordVariable: 'docker_pass', usernameVariable: 'docker_user')]) {
+                script{
+                    sshagent(['Docker-Server']) {
+                        def mavenpom = readMavenPom file: 'pom.xml'
+                        def artifactId= 'helloworld'
+                        def tag = "${mavenpom.version}"
+
+                        sh "ssh -o StrictHostKeyChecking=no -l dockeradmin 172.31.22.228 sed -i 's/tag/${mavenpom.version}-${env.build_no}/g' Deployment.yaml "
+                        sh "ssh -o StrictHostKeyChecking=no -l dockeradmin 172.31.22.228 sudo cp Deployment.yaml service.yaml /home/ubuntu/"
+                        sh "ssh -o StrictHostKeyChecking=no -l dockeradmin 172.31.22.228 docker build --build-arg artifact_id=${artifactId} --build-arg host_name=${env.nex_url} --build-arg version=${mavenpom.version} --build-arg build_no=${env.build_no} -t avinashdere99/tomcat:${mavenpom.version}-${env.build_no} ."
+                        sh "ssh -o StrictHostKeyChecking=no -l dockeradmin 172.31.22.228 docker login -u $docker_user -p $docker_pass"
+                        sh "ssh -o StrictHostKeyChecking=no -l dockeradmin 172.31.22.228 docker push avinashdere99/tomcat:${mavenpom.version}-${env.build_no}"
+                        sh "ssh -o StrictHostKeyChecking=no -l dockeradmin 172.31.22.228 docker rmi avinashdere99/tomcat:${mavenpom.version}-${env.build_no}"
+                    }
+                   }
                 }
             }
         }*/
