@@ -5,7 +5,7 @@ pipeline {
     agent any
     environment {
         def git_branch = 'master'
-        def git_url = 'https://github.com/avidere/Docker-Deployment.git'
+        def git_url = 'https://github.com/avidere/onlinebookstore.git'
 
         def mvntest = 'mvn test '
         def mvnpackage = 'mvn clean install'
