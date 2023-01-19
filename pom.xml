@@ -64,7 +64,12 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>8.0.28</version>
 		</dependency>
-
+        
+		<dependency>
+			<groupId>software.aws.rds</groupId>
+			<artifactId>aws-mysql-jdbc</artifactId>
+			<version>8.0.28</version>
+		</dependency>
 
 		<dependency>
 			<groupId>javax.servlet</groupId>
