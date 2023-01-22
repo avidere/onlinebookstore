@@ -20,11 +20,11 @@ class DatabaseConfig {
     }
 
     public final static String DRIVER_NAME = prop.getProperty("db.driver");
-    public final static String DB_HOST = prop.getProperty("db.host");
-    public final static String DB_PORT = prop.getProperty("db.port");
-    public final static String DB_NAME = prop.getProperty("db.name");
-    public final static String DB_USER_NAME = prop.getProperty("db.username");
-    public final static String DB_PASSWORD = prop.getProperty("db.password");
-    public final static String CONNECTION_STRING = DB_HOST + ":" + DB_PORT + "/" + DB_NAME;
+    public final static String DB_HOST = prop.getProperty("DB_HOSTNAME");
+    public final static String DB_PORT = prop.getProperty("DB_PORT");
+    public final static String DB_NAME = prop.getProperty("DB_NAME");
+    public final static String DB_USER_NAME = prop.getProperty("DB_USERNAME");
+    public final static String DB_PASSWORD = prop.getProperty("DB_PASSWORD");
+    public final static String CONNECTION_STRING = DB_HOSTNAME + ":" + DB_PORT + "/" + DB_NAME;
 
 }
