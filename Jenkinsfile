@@ -16,7 +16,7 @@ pipeline {
 
         def nex_cred = 'nexus'
         def grp_ID = 'onlinebookstore'
-        def nex_url = '35.74.251.48:8081'
+        def nex_url = '43.207.129.54:8081'
         def nex_ver = 'nexus3'
         def proto = 'http'
     }
