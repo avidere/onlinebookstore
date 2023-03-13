@@ -9,7 +9,7 @@ image:
   pullPolicy: Always
 
 service:
-  type: LoadBalncer
+  type: NodePort
   port: 8080
 
 
