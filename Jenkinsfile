@@ -86,15 +86,14 @@ pipeline {
                         def artifactId= 'onlinebookstore'
                         def tag = "${mavenpom.version}"
                         
-                         //  sh "ssh -o StrictHostKeyChecking=no -l ubuntu 172.31.22.228 sudo rm -rf onlinebookstore"
+                          sh "ssh -o StrictHostKeyChecking=no -l ubuntu 172.31.22.228 sudo rm -rf onlinebookstore"
                           sh "ssh -o StrictHostKeyChecking=no -l ubuntu 172.31.22.228 git clone ${git_url} "
                           sh "ssh -o StrictHostKeyChecking=no -l ubuntu 172.31.22.228 sudo sed -i 's/tag/${mavenpom.version}-${env.build_no}/g' /home/ubuntu/onlinebookstore/helm-chart/values.yaml"
                           //sh "ssh -o StrictHostKeyChecking=no -l ubuntu 172.31.22.228 helm uninstall demoapp1 TomcatMavenApp/helm-chart/"
                           sh "ssh -o StrictHostKeyChecking=no -l ubuntu 172.31.22.228 helm install demoapp1 onlinebookstore/helm-chart/"
                           sh "ssh -o StrictHostKeyChecking=no -l ubuntu 172.31.22.228 kubectl get all"
                           sh "ssh -o StrictHostKeyChecking=no -l ubuntu 172.31.22.228 kubectl get nodes -o wide"
-                    
-                       sh "ssh -o StrictHostKeyChecking=no -l dockeradmin 172.31.22.228 docker rmi avinashdere99/onlinebookstore:${mavenpom.version}-${env.build_no}"
+                
                     }
                    }
                 }
