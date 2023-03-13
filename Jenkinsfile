@@ -68,8 +68,6 @@ pipeline {
                         def artifactId= 'onlinebookstore'
                         def tag = "${mavenpom.version}"
 
-                     //   sh "ssh -o StrictHostKeyChecking=no -l dockeradmin 172.31.22.228 sed -i 's/tag/${mavenpom.version}-${env.build_no}/g' Deployment.yaml "
-                      //  sh "ssh -o StrictHostKeyChecking=no -l dockeradmin 172.31.22.228 sudo cp Deployment.yaml service.yaml /home/ubuntu/"
                         sh "ssh -o StrictHostKeyChecking=no -l dockeradmin 172.31.22.228 docker build --build-arg artifact_id=${artifactId} --build-arg host_name=${env.nex_url} --build-arg version=${mavenpom.version} --build-arg build_no=${env.build_no} -t avinashdere99/onlinebookstore:${mavenpom.version}-${env.build_no} ."
                         sh "ssh -o StrictHostKeyChecking=no -l dockeradmin 172.31.22.228 docker login -u $docker_user -p $docker_pass"
                         sh "ssh -o StrictHostKeyChecking=no -l dockeradmin 172.31.22.228 docker push avinashdere99/onlinebookstore:${mavenpom.version}-${env.build_no}"
@@ -79,5 +77,28 @@ pipeline {
                 }
             }
         }
+		stage('Deploy Application on k8s using helm chart'){
+            steps{
+                withCredentials([usernamePassword(credentialsId: 'Docker_hub', passwordVariable: 'docker_pass', usernameVariable: 'docker_user')]) {
+                script{
+                    sshagent(['Docker-Server']) {
+                        def mavenpom = readMavenPom file: 'pom.xml'
+                        def artifactId= 'onlinebookstore'
+                        def tag = "${mavenpom.version}"
+                        
+                         //  sh "ssh -o StrictHostKeyChecking=no -l ubuntu 172.31.22.228 sudo rm -rf onlinebookstore"
+                          sh "ssh -o StrictHostKeyChecking=no -l ubuntu 172.31.22.228 git clone ${git_url} "
+                          sh "ssh -o StrictHostKeyChecking=no -l ubuntu 172.31.22.228 sudo sed -i 's/tag/${mavenpom.version}-${env.build_no}/g' /home/ubuntu/onlinebookstore/helm-chart/values.yaml"
+                          //sh "ssh -o StrictHostKeyChecking=no -l ubuntu 172.31.22.228 helm uninstall demoapp1 TomcatMavenApp/helm-chart/"
+                          sh "ssh -o StrictHostKeyChecking=no -l ubuntu 172.31.22.228 helm install demoapp1 onlinebookstore/helm-chart/"
+                          sh "ssh -o StrictHostKeyChecking=no -l ubuntu 172.31.22.228 kubectl get all"
+                          sh "ssh -o StrictHostKeyChecking=no -l ubuntu 172.31.22.228 kubectl get nodes -o wide"
+                    
+                       sh "ssh -o StrictHostKeyChecking=no -l dockeradmin 172.31.22.228 docker rmi avinashdere99/onlinebookstore:${mavenpom.version}-${env.build_no}"
+                    }
+                   }
+                }
+            }
+        }        
     }
 }
